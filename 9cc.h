@@ -64,8 +64,18 @@ struct Node {
   int offset;
 };
 
-extern Node *code[];
+typedef struct LVar LVar;
+struct LVar {
+  LVar *next;
+  char *name;
+  int len;
+  int offset;
+};
 
+extern Node *code[];
+extern LVar *locals;
+
+LVar *find_lvar(Token *tok);
 Node *new_node(NodeKind kind);
 Node *new_binary(NodeKind kind, Node *lhs, Node *rhs);
 Node *new_node_num(int val);
