@@ -33,8 +33,8 @@ bool consume(char *op) {
   return true;
 }
 
-Token *consume_ident() {
-  if (token->kind != TK_IDENT) {
+Token *consume_kind(TokenKind kind) {
+  if (token->kind != kind) {
     return NULL;
   }
   Token *tok = token;
@@ -76,6 +76,10 @@ bool startwith(char *p, char *q) {
   return memcmp(p, q, strlen(q)) == 0;
 }
 
+int is_alnum(char c) {
+  return isalnum(c) || c == '_';
+}
+
 Token *tokenize() {
   char *p = user_input;
   Token head;
@@ -108,11 +112,17 @@ Token *tokenize() {
       continue;
     }
 
+    if (strncmp(p, "return", 6) == 0 && !is_alnum(p[6])) {
+      cur = new_token(TK_RETURN, cur, p, 6);
+      p += 6;
+      continue;
+    }
+
     if (isalpha(*p) || *p == '_') {
       char *start = p;
       do {
         p++;
-      } while (isalnum(*p) || *p == '_');
+      } while (is_alnum(*p));
       cur = new_token(TK_IDENT, cur, start, p - start);
       continue;
     }

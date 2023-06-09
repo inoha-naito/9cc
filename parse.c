@@ -40,8 +40,17 @@ void program() {
 }
 
 Node *stmt() {
-  Node *node = expr();
+  Node *node;
+
+  if (consume_kind(TK_RETURN)) {
+    node = new_node(ND_RETURN);
+    node->lhs = expr();
+  } else {
+    node = expr();
+  }
+
   expect(";");
+
   return node;
 }
 
@@ -134,7 +143,7 @@ Node *primary() {
     return node;
   }
 
-  Token *tok = consume_ident();
+  Token *tok = consume_kind(TK_IDENT);
   if (tok) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_LVAR;
@@ -150,7 +159,7 @@ Node *primary() {
       lvar->offset = locals ? locals->offset + 8 : 8;
       node->offset = lvar->offset;
       locals = lvar;
-    };
+    }
     return node;
   }
 
