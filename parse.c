@@ -42,6 +42,15 @@ void program() {
 Node *stmt() {
   Node *node;
 
+  if (consume_kind(TK_IF)) {
+    expect("(");
+    node = new_node(ND_IF);
+    node->cond = expr();
+    expect(")");
+    node->then = stmt();
+    return node;
+  }
+
   if (consume_kind(TK_RETURN)) {
     node = new_node(ND_RETURN);
     node->lhs = expr();
