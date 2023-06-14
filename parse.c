@@ -48,6 +48,9 @@ Node *stmt() {
     node->cond = expr();
     expect(")");
     node->then = stmt();
+    if (consume_kind(TK_ELSE)) {
+      node->els = stmt();
+    }
     return node;
   }
 
