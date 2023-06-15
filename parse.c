@@ -54,6 +54,15 @@ Node *stmt() {
     return node;
   }
 
+  if (consume_kind(TK_WHILE)) {
+    expect("(");
+    node = new_node(ND_WHILE);
+    node->cond = expr();
+    expect(")");
+    node->then = stmt();
+    return node;
+  }
+
   if (consume_kind(TK_RETURN)) {
     node = new_node(ND_RETURN);
     node->lhs = expr();
