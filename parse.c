@@ -63,6 +63,19 @@ Node *stmt() {
     return node;
   }
 
+  if (consume_kind(TK_FOR)) {
+    expect("(");
+    node = new_node(ND_FOR);
+    node->init = expr();
+    expect(";");
+    node->cond = expr();
+    expect(";");
+    node->inc = expr();
+    expect(")");
+    node->then = stmt();
+    return node;
+  }
+
   if (consume_kind(TK_RETURN)) {
     node = new_node(ND_RETURN);
     node->lhs = expr();
