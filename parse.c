@@ -42,6 +42,15 @@ void program() {
 Node *stmt() {
   Node *node;
 
+  if (consume("{")) {
+    node = new_node(ND_BLOCK);
+    node->block = calloc(100, sizeof(Node));
+    for (int i = 0; !consume("}"); i++) {
+      node->block[i] = stmt();
+    }
+    return node;
+  }
+
   if (consume_kind(TK_IF)) {
     expect("(");
     node = new_node(ND_IF);

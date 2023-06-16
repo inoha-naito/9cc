@@ -28,4 +28,16 @@ assert 3 'for (;;) return 3; return 5;'
 
 assert 10 'i=0; while (i<10) i=i+1; return i;'
 
+assert 10 "a = 0;
+for(;;a = a + 1) if (a == 5) return 10;
+return 2;"
+
+# block
+assert 10 "a = 0;
+for(;;) {
+  a = a + 1;
+  if (a == 5) return 10;
+}
+return 2;"
+
 echo OK

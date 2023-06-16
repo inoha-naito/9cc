@@ -71,6 +71,11 @@ void gen(Node *node) {
       printf(".Lend%03d:\n", c);
       return;
     }
+    case ND_BLOCK:
+      for (int i = 0; node->block[i]; i++) {
+        gen(node->block[i]);
+      }
+      return;
     case ND_RETURN:
       gen(node->lhs);
       printf("  pop rax\n");
