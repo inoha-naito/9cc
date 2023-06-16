@@ -1,5 +1,10 @@
 #include "9cc.h"
 
+static int count(void) {
+  static int i = 1;
+  return i++;
+}
+
 void gen_lval(Node *node) {
   if (node->kind != ND_LVAR) {
     error("代入の左辺値が変数ではありません");
@@ -22,44 +27,50 @@ void gen(Node *node) {
       printf("  mov rax, [rax]\n");
       printf("  push rax\n");
       return;
-    case ND_IF:
+    case ND_IF: {
+      int c = count();
       gen(node->cond);
       printf("  pop rax\n");
       printf("  cmp rax, 0\n");
-      printf("  je .LelseXXX\n");
+      printf("  je .Lelse%03d\n", c);
       gen(node->then);
-      printf("  jmp .LendXXX\n");
-      printf(".LelseXXX:\n");
+      printf("  jmp .Lend%03d\n", c);
+      printf(".Lelse%03d:\n", c);
       if (node->els) {
         gen(node->els);
       }
-      printf(".LendXXX:\n");
+      printf(".Lend%03d:\n", c);
       return;
-    case ND_WHILE:
-      printf(".LbeginXXX:\n");
+    }
+    case ND_WHILE: {
+      int c = count();
+      printf(".Lbegin%03d:\n", c);
       gen(node->cond);
       printf("  pop rax\n");
       printf("  cmp rax, 0\n");
-      printf("  je .LendXXX\n");
+      printf("  je .Lend%03d\n", c);
       gen(node->then);
-      printf("  jmp .LbeginXXX\n");
-      printf(".LendXXX:\n");
+      printf("  jmp .Lbegin%03d\n", c);
+      printf(".Lend%03d:\n", c);
       return;
-    case ND_FOR:
+    }
+    case ND_FOR: {
+      int c = count();
       gen(node->init);
-      printf(".LbeginXXX:\n");
+      printf(".Lbegin%03d:\n", c);
       gen(node->cond);
       if (!node->cond) {
         printf("  push 1\n");
       }
       printf("  pop rax\n");
       printf("  cmp rax, 0\n");
-      printf("  je .LendXXX\n");
+      printf("  je .Lend%03d\n", c);
       gen(node->then);
       gen(node->inc);
-      printf("  jmp .LbeginXXX\n");
-      printf(".LendXXX:\n");
+      printf("  jmp .Lbegin%03d\n", c);
+      printf(".Lend%03d:\n", c);
       return;
+    }
     case ND_RETURN:
       gen(node->lhs);
       printf("  pop rax\n");
