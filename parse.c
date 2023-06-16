@@ -66,12 +66,18 @@ Node *stmt() {
   if (consume_kind(TK_FOR)) {
     expect("(");
     node = new_node(ND_FOR);
-    node->init = expr();
-    expect(";");
-    node->cond = expr();
-    expect(";");
-    node->inc = expr();
-    expect(")");
+    if (!consume(";")) {
+      node->init = expr();
+      expect(";");
+    }
+    if (!consume(";")) {
+      node->cond = expr();
+      expect(";");
+    }
+    if (!consume(")")) {
+      node->inc = expr();
+      expect(")");
+    }
     node->then = stmt();
     return node;
   }

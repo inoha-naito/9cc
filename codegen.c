@@ -11,6 +11,7 @@ void gen_lval(Node *node) {
 }
 
 void gen(Node *node) {
+  if (!node) return;
   switch (node->kind) {
     case ND_NUM:
       printf("  push %d\n", node->val);
@@ -48,6 +49,9 @@ void gen(Node *node) {
       gen(node->init);
       printf(".LbeginXXX:\n");
       gen(node->cond);
+      if (!node->cond) {
+        printf("  push 1\n");
+      }
       printf("  pop rax\n");
       printf("  cmp rax, 0\n");
       printf("  je .LendXXX\n");
